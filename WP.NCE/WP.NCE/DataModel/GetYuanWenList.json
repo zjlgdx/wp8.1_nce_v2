@@ -1,0 +1,29 @@
+﻿{
+    "Code": 0,
+    "Message": "",
+    "Value": [{
+        "Time": "00:10.94",
+        "Sentence": "Whose handbag is it?"
+    }, {
+        "Time": "00:15.24",
+        "Sentence": "Excuse me!"
+    }, {
+        "Time": "00:16.83",
+        "Sentence": "Yes?"
+    }, {
+        "Time": "00:18.33",
+        "Sentence": "Is this your handbag?"
+    }, {
+        "Time": "00:21.47",
+        "Sentence": "Pardon?"
+    }, {
+        "Time": "00:23.18",
+        "Sentence": "Is this your handbag?"
+    }, {
+        "Time": "00:26.29",
+        "Sentence": "Yes it is."
+    }, {
+        "Time": "00:30.34",
+        "Sentence": "Thank you very much."
+    }]
+}

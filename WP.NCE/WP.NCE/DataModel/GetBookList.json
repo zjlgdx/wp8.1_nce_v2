@@ -1,0 +1,29 @@
+﻿{
+    "Code": 0,
+    "Message": "",
+    "Value": [{
+        "Key": "xingainian1",
+        "BookIndex": "1",
+        "EnName": "New Concept English The First Stage",
+        "CnName": "新概念英语第一册",
+        "ShortName": "第一册"
+    }, {
+        "Key": "xingainian2",
+        "BookIndex": "2",
+        "EnName": "New Concept English The Second Stage",
+        "CnName": "新概念英语第二册",
+        "ShortName": "第二册"
+    }, {
+        "Key": "xingainian3",
+        "BookIndex": "3",
+        "EnName": "New Concept English The Third Stage",
+        "CnName": "新概念英语第三册",
+        "ShortName": "第三册"
+    }, {
+        "Key": "xingainian4",
+        "BookIndex": "4",
+        "EnName": "New Concept English The Fourth Stage",
+        "CnName": "新概念英语第四册",
+        "ShortName": "第四册"
+    }]
+}

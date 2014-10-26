@@ -1,0 +1,1 @@
+BookUnitListPage.xaml page will cause loose app restore state.

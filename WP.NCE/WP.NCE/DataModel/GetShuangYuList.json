@@ -1,0 +1,37 @@
+﻿{
+    "Code": 0,
+    "Message": "",
+    "Value": [{
+        "Time": "00:10.94",
+        "Sentence": "Whose handbag is it?",
+        "CnSentence": ""
+    }, {
+        "Time": "00:15.24",
+        "Sentence": "Excuse me!",
+        "CnSentence": "对不起。"
+    }, {
+        "Time": "00:16.83",
+        "Sentence": "Yes?",
+        "CnSentence": "什么事？"
+    }, {
+        "Time": "00:18.33",
+        "Sentence": "Is this your handbag?",
+        "CnSentence": "这是您的手提包吗？"
+    }, {
+        "Time": "00:21.47",
+        "Sentence": "Pardon?",
+        "CnSentence": "对不起，请再说一遍。"
+    }, {
+        "Time": "00:23.18",
+        "Sentence": "Is this your handbag?",
+        "CnSentence": "这是您的手提包吗？"
+    }, {
+        "Time": "00:26.29",
+        "Sentence": "Yes it is.",
+        "CnSentence": "是的，是我的。"
+    }, {
+        "Time": "00:30.34",
+        "Sentence": "Thank you very much.",
+        "CnSentence": "非常感谢！"
+    }]
+}
