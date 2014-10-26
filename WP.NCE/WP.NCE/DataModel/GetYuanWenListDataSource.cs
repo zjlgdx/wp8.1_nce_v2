@@ -27,7 +27,7 @@ namespace WP.NCE.DataModel
     public sealed class GetYuanWenListDataSource : BaseDataSource
     {
         //http://m.hujiang.com/handler/appweb.json?v=0.6368643059395254&op=GetYuanWenList&bookIndex=1&startIndex=1&endIndex=24&currentIndex=1&callback=jsonp2
-        private const string JSON_URL = "http://m.hujiang.com/handler/appweb.json?v={0}&op=GetYuanWenList&bookIndex={1}&startIndex={2}&endIndex={3}&currentIndex={4}";
+        private const string JSON_URL = "http://m.hujiang.com/handler/App/NceApp.json?v={0}&op=GetYuanWenList&bookIndex={1}&startIndex={2}&endIndex={3}&currentIndex={4}";
 
         private static readonly GetYuanWenListDataSource _sampleDataSource = new GetYuanWenListDataSource();
         private string BookTextKey { get; set; }
