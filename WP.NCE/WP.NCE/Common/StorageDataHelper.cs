@@ -13,15 +13,16 @@ namespace WP.NCE.Common
         {
             try
             {
-                var devices = KnownFolders.RemovableDevices;
+                var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                //var devices = KnownFolders.RemovableDevices;
 
-                var sdCards = await devices.GetFoldersAsync();
+                //var sdCards = await devices.GetFoldersAsync();
 
-                if (sdCards.Count == 0) return string.Empty;
+                //if (sdCards.Count == 0) return string.Empty;
 
-                var firstCard = sdCards[0];
+                //var firstCard = sdCards[0];
 
-                StorageFolder folder = await firstCard.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
+                StorageFolder folder = await localFolder.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
                 StorageFolder subfolder = await folder.CreateFolderAsync("Json", CreationCollisionOption.OpenIfExists);
 
                 var file = await subfolder.GetFileAsync(filename);
@@ -41,15 +42,16 @@ namespace WP.NCE.Common
         {
             try
             {
-                var devices = KnownFolders.RemovableDevices;
+                var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                //var devices = KnownFolders.RemovableDevices;
 
-                var sdCards = await devices.GetFoldersAsync();
+                //var sdCards = await devices.GetFoldersAsync();
 
-                if (sdCards.Count == 0) return string.Empty;
+                //if (sdCards.Count == 0) return string.Empty;
 
-                var firstCard = sdCards[0];
+                //var firstCard = sdCards[0];
 
-                StorageFolder folder = await firstCard.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
+                StorageFolder folder = await localFolder.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
                 StorageFolder subfolder = await folder.CreateFolderAsync("audio", CreationCollisionOption.OpenIfExists);
                 var file = await subfolder.GetFileAsync(filename);
                 return file.Path;
@@ -67,15 +69,16 @@ namespace WP.NCE.Common
 
         public async static Task writeTextToSDCard(string foldername, string filename, string logData)
         {
-            var devices = Windows.Storage.KnownFolders.RemovableDevices;
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            //var devices = Windows.Storage.KnownFolders.RemovableDevices;
 
-            var sdCards = await devices.GetFoldersAsync();
+            //var sdCards = await devices.GetFoldersAsync();
 
-            if (sdCards.Count == 0) return;
+            //if (sdCards.Count == 0) return;
 
-            var firstCard = sdCards[0];
+            //var firstCard = sdCards[0];
 
-            StorageFolder notesFolder = await firstCard.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
+            StorageFolder notesFolder = await localFolder.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
             StorageFolder subfolder = await notesFolder.CreateFolderAsync("Json", CreationCollisionOption.OpenIfExists);
             StorageFile file = await subfolder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(file, logData);
@@ -86,14 +89,15 @@ namespace WP.NCE.Common
 
         public async static Task<string> readTextFromSDCard(string foldername, string filename)
         {
-            var devices = Windows.Storage.KnownFolders.RemovableDevices;
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            //var devices = Windows.Storage.KnownFolders.RemovableDevices;
 
-            var sdCards = await devices.GetFoldersAsync();
+            //var sdCards = await devices.GetFoldersAsync();
 
-            if (sdCards.Count == 0) return null;
+            //if (sdCards.Count == 0) return null;
 
-            var firstCard = sdCards[0];
-            StorageFolder notesFolder = await firstCard.GetFolderAsync(foldername);
+            //var firstCard = sdCards[0];
+            StorageFolder notesFolder = await localFolder.GetFolderAsync(foldername);
             StorageFolder subfolder = await notesFolder.GetFolderAsync("Json");
             StorageFile file = await subfolder.GetFileAsync(filename);
             
@@ -128,13 +132,14 @@ namespace WP.NCE.Common
 
         public static async Task<string> DownloadAudioFileToMusicLibraryAsync(string downloadUriString, string foldername, string filename)
         {
-            var devices = KnownFolders.RemovableDevices;
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            //var devices = KnownFolders.RemovableDevices;
 
-            var sdCards = await devices.GetFoldersAsync();
+            //var sdCards = await devices.GetFoldersAsync();
 
-            if (sdCards.Count == 0) return string.Empty;
+            //if (sdCards.Count == 0) return string.Empty;
 
-            var firstCard = sdCards[0];
+            //var firstCard = sdCards[0];
 
             Uri downLoadingUri = new Uri(downloadUriString);
             HttpClient client = new HttpClient();
@@ -143,7 +148,7 @@ namespace WP.NCE.Common
                 //http://msdn.microsoft.com/en-us/library/windows/apps/xaml/Hh758325(v=win.10).aspx
                 // Quickstart: Reading and writing files (XAML)\
                 var buffer = await response.Content.ReadAsBufferAsync();
-                var folder = await firstCard.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
+                var folder = await localFolder.CreateFolderAsync(foldername, CreationCollisionOption.OpenIfExists);
                 StorageFolder subfolder = await folder.CreateFolderAsync("audio", CreationCollisionOption.OpenIfExists);
                 StorageFile file = await subfolder.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
                 await FileIO.WriteBufferAsync(file, buffer);

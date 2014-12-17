@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using WP.NCE.Common;
@@ -54,6 +55,11 @@ namespace WP.NCE
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            bool failed = false;
+            try
+            {
+
+           
             // TODO: Create an appropriate data model for your problem domain to replace the sample data.
             var bookkey = (string) e.NavigationParameter;
 
@@ -64,6 +70,18 @@ namespace WP.NCE
             //key=nce&bookKey=xingainian1
             var bookUnitList = await GetBookUnitListDataSource.GetBookUnitListAsync(key: "nce", bookKey: bookkey);
             this.DefaultViewModel["BookUnitList"] = bookUnitList;
+            }
+            catch (Exception)
+            {
+
+                failed = true;
+            }
+
+            if (failed)
+            {
+                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+               await md2.ShowAsync();
+            }
             
         }
 

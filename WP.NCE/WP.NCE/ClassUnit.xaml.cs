@@ -70,6 +70,11 @@ namespace WP.NCE
         /// session.  The state will be null the first time a page is visited.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            bool failed = false;
+            try
+            {
+
+            
             bookTextKey = (string)e.NavigationParameter;
 
             var bookTextInfo = await GetBookTextDataSource.GetBookTextAsync(null, bookTextKey);
@@ -80,6 +85,16 @@ namespace WP.NCE
             this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
 
             await DownloadAudioFile();
+            }
+            catch (Exception)
+            {
+                failed = true;
+            } 
+            if (failed)
+            {
+                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                await md2.ShowAsync();
+            }
         }
 
         /// <summary>
@@ -174,6 +189,11 @@ namespace WP.NCE
 
         private async void FourPivot_Loaded(object sender, RoutedEventArgs e)
         {
+            bool failed = false;
+            try
+            {
+
+            
             var sampleDataGroup = await GetXiangJieListDataSource.GetXiangJieAsync(bookTextKey: bookTextKey);
             //"<html><body><h2>This is an HTML fragment</h2></body></html>");
             StringBuilder sbHtml = new StringBuilder("<html><body>");
@@ -185,6 +205,18 @@ namespace WP.NCE
             sbHtml.Append("</body></html>");
             wvXiangjie.NavigateToString(sbHtml.ToString());
             this.DefaultViewModel[FourGroupName] = sampleDataGroup;
+            }
+            catch (Exception)
+            {
+
+                failed = true;
+            }
+
+            if (failed)
+            {
+                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                await md2.ShowAsync();
+            }
         }
 
         private enum Mp3Type
@@ -264,14 +296,48 @@ namespace WP.NCE
 
         private async void ThreePivot_Loaded(object sender, RoutedEventArgs e)
         {
+            bool failed = false;
+            try
+            {
+
+           
             var sampleDataGroup = await GetCiHuiListDataSource.GetVocabularyAsync(bookTextKey: bookTextKey);
             this.DefaultViewModel[ThreeGroupName] = sampleDataGroup;
+
+            }
+            catch (Exception)
+            {
+
+                failed = true;
+            }
+
+            if (failed)
+            {
+                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                await md2.ShowAsync();
+            }
         }
 
         private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
         {
+            bool failed = false;
+            try
+            {
             var sampleDataGroup = await GetShuangYuListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
             this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
+
+            }
+            catch (Exception)
+            {
+
+                failed = true;
+            }
+
+            if (failed)
+            {
+                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                await md2.ShowAsync();
+            }
         }
 
         private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
@@ -326,7 +392,9 @@ namespace WP.NCE
         }
 
         private async void American_OnClick(object sender, RoutedEventArgs e)
-        {
+        { bool failed = false;
+            try
+            {
             AudioType = Mp3Type.American;
             var file = await DownloadAudioFile();
 
@@ -352,10 +420,24 @@ namespace WP.NCE
                 MessageDialog md2 = new MessageDialog("file is not complete!", "audio");
                 await md2.ShowAsync();
             }
+            }
+            catch (Exception)
+            {
+
+                failed = true;
+            }
+
+            if (failed)
+            {
+                MessageDialog md3 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                await md3.ShowAsync();
+            }
         }
 
         private async void English_OnClick(object sender, RoutedEventArgs e)
-        {
+        {bool failed = false;
+            try
+            {
             AudioType = Mp3Type.English;
             var file = await DownloadAudioFile();
             MessageDialog md = new MessageDialog("download complete!" + file, "audio");
@@ -378,6 +460,18 @@ namespace WP.NCE
             {
                 MessageDialog md2 = new MessageDialog("file is not complete!", "audio");
                 await md2.ShowAsync();
+            }
+            }
+            catch (Exception)
+            {
+
+                failed = true;
+            }
+
+            if (failed)
+            {
+                MessageDialog md3 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                await md3.ShowAsync();
             }
         }
     }
