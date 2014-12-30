@@ -73,14 +73,43 @@ namespace WP.BackgroundAudioTask
         private void MessageReceivedFromForeground(object sender, MediaPlayerDataReceivedEventArgs e)
         {
             ValueSet valueSet = e.Data;
+            string[] fileInfo;
             foreach (string key in valueSet.Keys)
             {
                 switch (key)
                 {
                     case "Play":
                         Debug.WriteLine("Starting Playback");
-                        string[] fileInfo = (string[])valueSet[key];
+                        fileInfo = (string[])valueSet[key];
                         Play(fileInfo);
+                        break;
+                    case "samePause-notPlay":
+                        fileInfo = (string[])valueSet[key];
+                        if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                        {
+                            if (systemmediatransportcontrol.DisplayUpdater.AppMediaId == fileInfo[2])
+                            {
+                                BackgroundMediaPlayer.Current.Pause();
+                            }
+                            else
+                            {
+                                Play(fileInfo);
+                            }
+                        }
+                        break;
+                    case "samePlay-notPlay":
+                        fileInfo = (string[])valueSet[key];
+                        if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
+                        {
+                            if (systemmediatransportcontrol.DisplayUpdater.AppMediaId == fileInfo[2])
+                            {
+                                BackgroundMediaPlayer.Current.Play();
+                            }
+                            else
+                            {
+                                Play(fileInfo);
+                            }
+                        }
                         break;
                     case "SetPosition":
                         Debug.WriteLine("Set position:");
@@ -91,7 +120,45 @@ namespace WP.BackgroundAudioTask
                         var position = TimeSpan.ParseExact(timespanValue, "c", null);
                         BackgroundMediaPlayer.Current.Position = position;
                         break;
+                    case "SetSource":
+                         Debug.WriteLine("Starting Playback");
+                         fileInfo = (string[])valueSet[key];
 
+                        if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                        {
+                            if (systemmediatransportcontrol.DisplayUpdater.AppMediaId != fileInfo[2])
+                            {
+                                Play((string[])valueSet[key]);
+                                
+                            }
+                            
+                        }
+
+                        
+                        break;
+                    case "bookTextKey":
+                        Debug.WriteLine("Check bookTextKey:");
+                        //
+                        var bookTextKey = e.Data[key].ToString();
+                        Debug.WriteLine(bookTextKey);
+
+                        if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                        {
+                            if (systemmediatransportcontrol.DisplayUpdater.AppMediaId != bookTextKey)
+                            {
+                                BackgroundMediaPlayer.Current.Pause();
+                            }
+                            else
+                            {
+                                var message = new ValueSet();
+
+                                message.Add("updateplaybuttonstatus", bookTextKey);
+                                BackgroundMediaPlayer.SendMessageToForeground(message);
+                            }
+                        }
+                        
+                       
+                        break;
                 }
             }
         }
@@ -99,7 +166,7 @@ namespace WP.BackgroundAudioTask
         private void Play(string[] toPlay)
         {
             MediaPlayer mediaPlayer = BackgroundMediaPlayer.Current;
-            mediaPlayer.AutoPlay = true;
+            mediaPlayer.AutoPlay = toPlay[3]=="autoplay";
             mediaPlayer.IsLoopingEnabled = true;
             mediaPlayer.SetUriSource(new Uri(toPlay[1]));
 
@@ -108,6 +175,7 @@ namespace WP.BackgroundAudioTask
             systemmediatransportcontrol.IsPlayEnabled = true;
             systemmediatransportcontrol.DisplayUpdater.Type = MediaPlaybackType.Music;
             systemmediatransportcontrol.DisplayUpdater.MusicProperties.Title = toPlay[0];
+            systemmediatransportcontrol.DisplayUpdater.AppMediaId = toPlay[2];
             systemmediatransportcontrol.DisplayUpdater.Update();
         }
 

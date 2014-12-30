@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation.Collections;
@@ -77,6 +78,10 @@ namespace WP.NCE
             
             bookTextKey = (string)e.NavigationParameter;
 
+            var message = new ValueSet();
+            message.Add("bookTextKey", bookTextKey);
+            BackgroundMediaPlayer.SendMessageToBackground(message);
+
             var bookTextInfo = await GetBookTextDataSource.GetBookTextAsync(null, bookTextKey);
             this.DefaultViewModel["BookText"] = bookTextInfo;
             bookTitle = bookTextInfo.Value.Name;
@@ -84,7 +89,19 @@ namespace WP.NCE
                 await GetYuanWenListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
             this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
 
-            await DownloadAudioFile();
+            var mp3file =await DownloadAudioFile();
+
+            string[] fileInfo = new[] { bookTitle, mp3file, bookTextKey, "!autoplay" };
+            message = new ValueSet
+                    {
+                        {
+                            "SetSource",
+                            fileInfo
+                        }
+
+                    };
+            BackgroundMediaPlayer.SendMessageToBackground(message);
+
             }
             catch (Exception)
             {
@@ -130,7 +147,48 @@ namespace WP.NCE
             App.Current.Suspending += ForegroundApp_Suspending;
             App.Current.Resuming += ForegroundApp_Resuming;
             _mediaPlayer.CurrentStateChanged += this.MediaPlayer_CurrentStateChanged;
+            BackgroundMediaPlayer.MessageReceivedFromBackground += BackgroundMediaPlayer_MessageReceivedFromBackground;
             this.navigationHelper.OnNavigatedTo(e);
+        }
+
+       async void BackgroundMediaPlayer_MessageReceivedFromBackground(object sender, MediaPlayerDataReceivedEventArgs e)
+        {
+            ValueSet valueSet = e.Data;
+           
+            foreach (string key in valueSet.Keys)
+            {
+                switch (key)
+                {
+
+
+                    case "updateplaybuttonstatus":
+                        Debug.WriteLine("updateplaybuttonstatus:");
+                        //
+                        var _bookTextKey = e.Data[key].ToString();
+                        Debug.WriteLine(bookTextKey);
+
+                        if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                        {
+                            if (_bookTextKey == bookTextKey)
+                            {
+                                //BackgroundMediaPlayer.Current.Pause();
+                                await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        //playButton.Content = "| |";     // Change to pause button
+                        PlayAppBarButton.Label = "pause";
+                        PlayAppBarButton.Icon = new SymbolIcon(Symbol.Pause);
+                        //prevButton.IsEnabled = true;
+                        //nextButton.IsEnabled = true;
+                    }
+                        );
+                            }
+                            
+                        }
+
+
+                        break;
+                }
+            }
         }
 
         private void ForegroundApp_Resuming(object sender, object e)
@@ -142,6 +200,7 @@ namespace WP.NCE
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             _mediaPlayer.CurrentStateChanged -= this.MediaPlayer_CurrentStateChanged;
+            BackgroundMediaPlayer.MessageReceivedFromBackground -= BackgroundMediaPlayer_MessageReceivedFromBackground;
             deferral.Complete();
         }
 
@@ -352,22 +411,64 @@ namespace WP.NCE
 
         private async void PlayAppBarButton_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+
+            
+            var file = await StorageDataHelper.GetAudioFileFromMusicLibraryAsync("WP.NCE", getAudioFileName);
 
             if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
             {
-                BackgroundMediaPlayer.Current.Pause();
-            }
-            else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
-            {
-                BackgroundMediaPlayer.Current.Play();
-            }
-            else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
-            {
-                var file = await StorageDataHelper.GetAudioFileFromMusicLibraryAsync("WP.NCE", getAudioFileName);
+                //BackgroundMediaPlayer.Current.Pause();
 
                 if (!string.IsNullOrEmpty(file))
                 {
-                    string[] fileInfo = new[] { bookTitle, file };
+                    string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
+                    var message = new ValueSet
+                    {
+                        {
+                            "samePause-notPlay",
+                            fileInfo
+                        }
+
+                    };
+                    BackgroundMediaPlayer.SendMessageToBackground(message);
+                }
+                else
+                {
+                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
+                    await md2.ShowAsync();
+                }
+            }
+            else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
+            {
+                //BackgroundMediaPlayer.Current.Play();
+                if (!string.IsNullOrEmpty(file))
+                {
+                    string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
+                    var message = new ValueSet
+                    {
+                        {
+                            "samePlay-notPlay",
+                            fileInfo
+                        }
+
+                    };
+                    BackgroundMediaPlayer.SendMessageToBackground(message);
+                }
+                else
+                {
+                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
+                    await md2.ShowAsync();
+                }
+            }
+            else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
+            {
+                
+
+                if (!string.IsNullOrEmpty(file))
+                {
+                    string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
                     var message = new ValueSet
                     {
                         {
@@ -386,7 +487,12 @@ namespace WP.NCE
 
             }
 
+            }
+            catch (Exception)
+            {
 
+                
+            }
 
 
         }
@@ -398,13 +504,13 @@ namespace WP.NCE
             AudioType = Mp3Type.American;
             var file = await DownloadAudioFile();
 
-            MessageDialog md = new MessageDialog("download complete!" + file, "audio");
-            await md.ShowAsync();
+            //MessageDialog md = new MessageDialog("download complete!" + file, "audio");
+            //await md.ShowAsync();
 
 
             if (!string.IsNullOrEmpty(file))
             {
-                string[] fileInfo = new[] { bookTitle, file };
+                string[] fileInfo = new[] { bookTitle, file, bookTextKey,"autoplay" };
                 var message = new ValueSet
                     {
                         {
@@ -417,7 +523,7 @@ namespace WP.NCE
             }
             else
             {
-                MessageDialog md2 = new MessageDialog("file is not complete!", "audio");
+                MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
                 await md2.ShowAsync();
             }
             }
@@ -440,12 +546,12 @@ namespace WP.NCE
             {
             AudioType = Mp3Type.English;
             var file = await DownloadAudioFile();
-            MessageDialog md = new MessageDialog("download complete!" + file, "audio");
-            await md.ShowAsync();
+            //MessageDialog md = new MessageDialog("download complete!" + file, "audio");
+            //await md.ShowAsync();
 
             if (!string.IsNullOrEmpty(file))
             {
-                string[] fileInfo = new[] { bookTitle, file };
+                string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
                 var message = new ValueSet
                     {
                         {
@@ -458,7 +564,7 @@ namespace WP.NCE
             }
             else
             {
-                MessageDialog md2 = new MessageDialog("file is not complete!", "audio");
+                MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
                 await md2.ShowAsync();
             }
             }
