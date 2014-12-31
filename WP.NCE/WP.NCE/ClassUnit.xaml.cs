@@ -74,25 +74,23 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                bookTextKey = (string)e.NavigationParameter;
 
-            
-            bookTextKey = (string)e.NavigationParameter;
+                var message = new ValueSet();
+                message.Add("bookTextKey", bookTextKey);
+                BackgroundMediaPlayer.SendMessageToBackground(message);
 
-            var message = new ValueSet();
-            message.Add("bookTextKey", bookTextKey);
-            BackgroundMediaPlayer.SendMessageToBackground(message);
+                var bookTextInfo = await GetBookTextDataSource.GetBookTextAsync(null, bookTextKey);
+                this.DefaultViewModel["BookText"] = bookTextInfo;
+                bookTitle = bookTextInfo.Value.Name;
+                var sampleDataGroup =
+                    await GetYuanWenListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
+                this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
 
-            var bookTextInfo = await GetBookTextDataSource.GetBookTextAsync(null, bookTextKey);
-            this.DefaultViewModel["BookText"] = bookTextInfo;
-            bookTitle = bookTextInfo.Value.Name;
-            var sampleDataGroup =
-                await GetYuanWenListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
-            this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
+                var mp3file = await DownloadAudioFile();
 
-            var mp3file =await DownloadAudioFile();
-
-            string[] fileInfo = new[] { bookTitle, mp3file, bookTextKey, "!autoplay" };
-            message = new ValueSet
+                string[] fileInfo = new[] { bookTitle, mp3file, bookTextKey, "!autoplay" };
+                message = new ValueSet
                     {
                         {
                             "SetSource",
@@ -100,13 +98,13 @@ namespace WP.NCE
                         }
 
                     };
-            BackgroundMediaPlayer.SendMessageToBackground(message);
+                BackgroundMediaPlayer.SendMessageToBackground(message);
 
             }
             catch (Exception)
             {
                 failed = true;
-            } 
+            }
             if (failed)
             {
                 MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
@@ -151,16 +149,14 @@ namespace WP.NCE
             this.navigationHelper.OnNavigatedTo(e);
         }
 
-       async void BackgroundMediaPlayer_MessageReceivedFromBackground(object sender, MediaPlayerDataReceivedEventArgs e)
+        async void BackgroundMediaPlayer_MessageReceivedFromBackground(object sender, MediaPlayerDataReceivedEventArgs e)
         {
             ValueSet valueSet = e.Data;
-           
+
             foreach (string key in valueSet.Keys)
             {
                 switch (key)
                 {
-
-
                     case "updateplaybuttonstatus":
                         Debug.WriteLine("updateplaybuttonstatus:");
                         //
@@ -171,18 +167,13 @@ namespace WP.NCE
                         {
                             if (_bookTextKey == bookTextKey)
                             {
-                                //BackgroundMediaPlayer.Current.Pause();
                                 await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        //playButton.Content = "| |";     // Change to pause button
-                        PlayAppBarButton.Label = "pause";
-                        PlayAppBarButton.Icon = new SymbolIcon(Symbol.Pause);
-                        //prevButton.IsEnabled = true;
-                        //nextButton.IsEnabled = true;
-                    }
-                        );
+                                        {
+                                            PlayAppBarButton.Label = "pause";
+                                            PlayAppBarButton.Icon = new SymbolIcon(Symbol.Pause);
+                                        });
                             }
-                            
+
                         }
 
 
@@ -224,11 +215,8 @@ namespace WP.NCE
                 case MediaPlayerState.Playing:
                     await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        //playButton.Content = "| |";     // Change to pause button
                         PlayAppBarButton.Label = "pause";
                         PlayAppBarButton.Icon = new SymbolIcon(Symbol.Pause);
-                        //prevButton.IsEnabled = true;
-                        //nextButton.IsEnabled = true;
                     }
                         );
 
@@ -236,7 +224,6 @@ namespace WP.NCE
                 case MediaPlayerState.Paused:
                     await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        //playButton.Content = ">";     // Change to play button
                         PlayAppBarButton.Label = "play";
                         PlayAppBarButton.Icon = new SymbolIcon(Symbol.Play);
                     }
@@ -252,18 +239,18 @@ namespace WP.NCE
             try
             {
 
-            
-            var sampleDataGroup = await GetXiangJieListDataSource.GetXiangJieAsync(bookTextKey: bookTextKey);
-            //"<html><body><h2>This is an HTML fragment</h2></body></html>");
-            StringBuilder sbHtml = new StringBuilder("<html><body>");
-            foreach (var lineContent in sampleDataGroup.Value)
-            {
-                sbHtml.AppendFormat("<p>{0}</p>", lineContent.Content);
-            }
 
-            sbHtml.Append("</body></html>");
-            wvXiangjie.NavigateToString(sbHtml.ToString());
-            this.DefaultViewModel[FourGroupName] = sampleDataGroup;
+                var sampleDataGroup = await GetXiangJieListDataSource.GetXiangJieAsync(bookTextKey: bookTextKey);
+                //"<html><body><h2>This is an HTML fragment</h2></body></html>");
+                StringBuilder sbHtml = new StringBuilder("<html><body>");
+                foreach (var lineContent in sampleDataGroup.Value)
+                {
+                    sbHtml.AppendFormat("<p>{0}</p>", lineContent.Content);
+                }
+
+                sbHtml.Append("</body></html>");
+                wvXiangjie.NavigateToString(sbHtml.ToString());
+                this.DefaultViewModel[FourGroupName] = sampleDataGroup;
             }
             catch (Exception)
             {
@@ -358,15 +345,12 @@ namespace WP.NCE
             bool failed = false;
             try
             {
-
-           
-            var sampleDataGroup = await GetCiHuiListDataSource.GetVocabularyAsync(bookTextKey: bookTextKey);
-            this.DefaultViewModel[ThreeGroupName] = sampleDataGroup;
+                var sampleDataGroup = await GetCiHuiListDataSource.GetVocabularyAsync(bookTextKey: bookTextKey);
+                this.DefaultViewModel[ThreeGroupName] = sampleDataGroup;
 
             }
             catch (Exception)
             {
-
                 failed = true;
             }
 
@@ -382,8 +366,8 @@ namespace WP.NCE
             bool failed = false;
             try
             {
-            var sampleDataGroup = await GetShuangYuListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
-            this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
+                var sampleDataGroup = await GetShuangYuListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
+                this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
 
             }
             catch (Exception)
@@ -413,18 +397,14 @@ namespace WP.NCE
         {
             try
             {
+                var file = await StorageDataHelper.GetAudioFileFromMusicLibraryAsync("WP.NCE", getAudioFileName);
 
-            
-            var file = await StorageDataHelper.GetAudioFileFromMusicLibraryAsync("WP.NCE", getAudioFileName);
-
-            if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
-            {
-                //BackgroundMediaPlayer.Current.Pause();
-
-                if (!string.IsNullOrEmpty(file))
+                if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
                 {
-                    string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
-                    var message = new ValueSet
+                    if (!string.IsNullOrEmpty(file))
+                    {
+                        string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
+                        var message = new ValueSet
                     {
                         {
                             "samePause-notPlay",
@@ -432,21 +412,20 @@ namespace WP.NCE
                         }
 
                     };
-                    BackgroundMediaPlayer.SendMessageToBackground(message);
+                        BackgroundMediaPlayer.SendMessageToBackground(message);
+                    }
+                    else
+                    {
+                        MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
+                        await md2.ShowAsync();
+                    }
                 }
-                else
+                else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
                 {
-                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                    await md2.ShowAsync();
-                }
-            }
-            else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
-            {
-                //BackgroundMediaPlayer.Current.Play();
-                if (!string.IsNullOrEmpty(file))
-                {
-                    string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
-                    var message = new ValueSet
+                    if (!string.IsNullOrEmpty(file))
+                    {
+                        string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
+                        var message = new ValueSet
                     {
                         {
                             "samePlay-notPlay",
@@ -454,17 +433,56 @@ namespace WP.NCE
                         }
 
                     };
-                    BackgroundMediaPlayer.SendMessageToBackground(message);
+                        BackgroundMediaPlayer.SendMessageToBackground(message);
+                    }
+                    else
+                    {
+                        MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
+                        await md2.ShowAsync();
+                    }
                 }
-                else
+                else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
                 {
-                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                    await md2.ShowAsync();
+
+
+                    if (!string.IsNullOrEmpty(file))
+                    {
+                        string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
+                        var message = new ValueSet
+                    {
+                        {
+                            "Play",
+                            fileInfo
+                        }
+
+                    };
+                        BackgroundMediaPlayer.SendMessageToBackground(message);
+                    }
+                    else
+                    {
+                        MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
+                        await md2.ShowAsync();
+                    }
+
                 }
+
             }
-            else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
+            catch (Exception)
             {
-                
+
+
+            }
+
+
+        }
+
+        private async void American_OnClick(object sender, RoutedEventArgs e)
+        {
+            bool failed = false;
+            try
+            {
+                AudioType = Mp3Type.American;
+                var file = await DownloadAudioFile();
 
                 if (!string.IsNullOrEmpty(file))
                 {
@@ -484,48 +502,6 @@ namespace WP.NCE
                     MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
                     await md2.ShowAsync();
                 }
-
-            }
-
-            }
-            catch (Exception)
-            {
-
-                
-            }
-
-
-        }
-
-        private async void American_OnClick(object sender, RoutedEventArgs e)
-        { bool failed = false;
-            try
-            {
-            AudioType = Mp3Type.American;
-            var file = await DownloadAudioFile();
-
-            //MessageDialog md = new MessageDialog("download complete!" + file, "audio");
-            //await md.ShowAsync();
-
-
-            if (!string.IsNullOrEmpty(file))
-            {
-                string[] fileInfo = new[] { bookTitle, file, bookTextKey,"autoplay" };
-                var message = new ValueSet
-                    {
-                        {
-                            "Play",
-                            fileInfo
-                        }
-
-                    };
-                BackgroundMediaPlayer.SendMessageToBackground(message);
-            }
-            else
-            {
-                MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                await md2.ShowAsync();
-            }
             }
             catch (Exception)
             {
@@ -541,18 +517,17 @@ namespace WP.NCE
         }
 
         private async void English_OnClick(object sender, RoutedEventArgs e)
-        {bool failed = false;
+        {
+            bool failed = false;
             try
             {
-            AudioType = Mp3Type.English;
-            var file = await DownloadAudioFile();
-            //MessageDialog md = new MessageDialog("download complete!" + file, "audio");
-            //await md.ShowAsync();
+                AudioType = Mp3Type.English;
+                var file = await DownloadAudioFile();
 
-            if (!string.IsNullOrEmpty(file))
-            {
-                string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
-                var message = new ValueSet
+                if (!string.IsNullOrEmpty(file))
+                {
+                    string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
+                    var message = new ValueSet
                     {
                         {
                             "Play",
@@ -560,13 +535,13 @@ namespace WP.NCE
                         }
 
                     };
-                BackgroundMediaPlayer.SendMessageToBackground(message);
-            }
-            else
-            {
-                MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                await md2.ShowAsync();
-            }
+                    BackgroundMediaPlayer.SendMessageToBackground(message);
+                }
+                else
+                {
+                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
+                    await md2.ShowAsync();
+                }
             }
             catch (Exception)
             {

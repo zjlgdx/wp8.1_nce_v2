@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Foundation.Collections;
 using Windows.Media;
@@ -156,7 +152,6 @@ namespace WP.BackgroundAudioTask
                                 BackgroundMediaPlayer.SendMessageToForeground(message);
                             }
                         }
-                        
                        
                         break;
                 }

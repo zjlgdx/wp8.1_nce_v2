@@ -12,8 +12,6 @@ namespace WP.NCE.DataModel
 
         public string JsonLocalFileName { get; set; }
 
-        
-
         public async Task<string> GetJsonDataSource()
         {
             var jsonfilename = await StorageDataHelper.GetJsonFileNameFromMusicLibraryAsync(RootFolder, JsonLocalFileName);

@@ -58,18 +58,15 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                var bookkey = (string)e.NavigationParameter;
 
-           
-            // TODO: Create an appropriate data model for your problem domain to replace the sample data.
-            var bookkey = (string) e.NavigationParameter;
+                //Key=nce&bookKey=xingainian1
+                var bookInfo = await GetBookDataSource.GetBookAsync(key: "nce", bookKey: bookkey);
+                this.DefaultViewModel["Book"] = bookInfo;
 
-            //Key=nce&bookKey=xingainian1
-            var bookInfo = await GetBookDataSource.GetBookAsync(key: "nce", bookKey: bookkey);
-            this.DefaultViewModel["Book"] = bookInfo;
-
-            //key=nce&bookKey=xingainian1
-            var bookUnitList = await GetBookUnitListDataSource.GetBookUnitListAsync(key: "nce", bookKey: bookkey);
-            this.DefaultViewModel["BookUnitList"] = bookUnitList;
+                //key=nce&bookKey=xingainian1
+                var bookUnitList = await GetBookUnitListDataSource.GetBookUnitListAsync(key: "nce", bookKey: bookkey);
+                this.DefaultViewModel["BookUnitList"] = bookUnitList;
             }
             catch (Exception)
             {
@@ -80,9 +77,9 @@ namespace WP.NCE
             if (failed)
             {
                 MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
-               await md2.ShowAsync();
+                await md2.ShowAsync();
             }
-            
+
         }
 
         /// <summary>
