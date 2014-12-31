@@ -8,7 +8,7 @@
     mc:Ignorable="d"
 DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
- <Page.Transitions>
+    <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
                 <NavigationThemeTransition.DefaultNavigationTransitionInfo>
@@ -45,28 +45,32 @@ DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
                 DataContext="{Binding FirstGroup}"
                 CommonNavigationTransitionInfo.IsStaggerElement="True">
                 <!--Double line list with text wrapping-->
-                <ListView
+                <Grid>
+                    <ListView x:Name="lvYuanwen"
                     ItemsSource="{Binding Value}"
                     IsItemClickEnabled="True"
                     ItemClick="ItemView_ItemClick"
                     ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,20">
-                                <Border BorderThickness="0,0,0,1" BorderBrush="LightSeaGreen" Padding="2">
-                                <TextBlock
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,20">
+                                    <Border BorderThickness="0,0,0,1" BorderBrush="LightSeaGreen" Padding="2">
+                                        <TextBlock
                                     Text="{Binding Sentence}"
                                     TextWrapping="WrapWholeWords"
                                     Pivot.SlideInAnimationGroup="1"
                                     CommonNavigationTransitionInfo.IsStaggerElement="True"
                                     FontSize="25"
                                     Margin="0,0,19,0"/>
-                                    
                                     </Border>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <ProgressRing x:Name="prYuanwen" Visibility="Collapsed"  IsActive="True" />
+
+                </Grid>
             </PivotItem>
 
             <!--Pivot item two-->
@@ -77,33 +81,38 @@ DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
                 DataContext="{Binding SecondGroup}"
                 >
                 <!--Double line list no text wrapping-->
-                <ListView
+                <Grid>
+                    <ListView x:Name="lvShuangyu"
                     ItemsSource="{Binding Value}"
                     IsItemClickEnabled="True"
                     ItemClick="ItemView_ItemClick"
                     Loaded="SecondPivot_Loaded"
                     ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderThickness="0,0,0,1" BorderBrush="LightSeaGreen" Margin="0,0,0,10" Padding="0,0,0,2">
-                            <StackPanel Margin="0,0,0,15">
-                                <TextBlock
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="0,0,0,1" BorderBrush="LightSeaGreen" Margin="0,0,0,10" Padding="0,0,0,2">
+                                    <StackPanel Margin="0,0,0,15">
+                                        <TextBlock
                                     Text="{Binding Sentence}"
                                     TextWrapping="WrapWholeWords"
                                     Pivot.SlideInAnimationGroup="1"
                                     CommonNavigationTransitionInfo.IsStaggerElement="True"
                                     FontSize="25"/>
-                                <TextBlock
+                                        <TextBlock
                                     Text="{Binding CnSentence}"
                                     TextWrapping="WrapWholeWords"
                                     Pivot.SlideInAnimationGroup="2"
                                     CommonNavigationTransitionInfo.IsStaggerElement="True"
                                     FontSize="25"/>
-                            </StackPanel>
+                                    </StackPanel>
                                 </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <ProgressRing x:Name="prShuangyu" Visibility="Collapsed"  IsActive="True" />
+
+                </Grid>
             </PivotItem>
 
             <!--Pivot item three-->
@@ -111,44 +120,47 @@ DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
                 x:Uid="PivotItem3"
                 Margin="19,14.5,0,0"
                 Header="词汇"
-                DataContext="{Binding ThreeGroup}"
-                >
+                DataContext="{Binding ThreeGroup}" >
                 <!--Double line list no text wrapping-->
-                <ListView
+                <Grid>
+                    <ListView x:Name="lvCihui"
                     ItemsSource="{Binding Value}"
-
                     Loaded="ThreePivot_Loaded"
                     ContinuumNavigationTransitionInfo.ExitElementContainer="True">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderThickness="0,0,0,1" BorderBrush="LightSeaGreen" Margin="0,0,0,10" Padding="0,0,0,2">
-                                <StackPanel Margin="0,0,0,15">
-                                <StackPanel  Orientation="Horizontal">
-                                    <TextBlock
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="0,0,0,1" BorderBrush="LightSeaGreen" Margin="0,0,0,10" Padding="0,0,0,2">
+                                    <StackPanel Margin="0,0,0,15">
+                                        <StackPanel  Orientation="Horizontal">
+                                            <TextBlock
                                     Text="{Binding Word}"
                                     TextWrapping="WrapWholeWords"
                                     Pivot.SlideInAnimationGroup="GroupOne"
                                     CommonNavigationTransitionInfo.IsStaggerElement="True"
                                     Style="{StaticResource ListViewItemTextBlockStyle}" Padding="0,0,15,0"/>
-                                    <TextBlock
+                                            <TextBlock
                                     Text="{Binding Pronounce}"
                                     TextWrapping="WrapWholeWords"
                                     Pivot.SlideInAnimationGroup="GroupTwo"
                                     CommonNavigationTransitionInfo.IsStaggerElement="True"
                                     Style="{StaticResource ListViewItemContentTextBlockStyle}" Padding="0,0,15,0"/>
-                                   
-                                </StackPanel>
-                                <TextBlock
+
+                                        </StackPanel>
+                                        <TextBlock
                                     Text="{Binding Comment}"
                                    TextWrapping="WrapWholeWords"
                                     Pivot.SlideInAnimationGroup="GroupThree"
                                     CommonNavigationTransitionInfo.IsStaggerElement="True"
                                     Style="{StaticResource ListViewItemTextBlockStyle}" Padding="0,0,15,0"/>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <ProgressRing x:Name="prCihui" Visibility="Collapsed"  IsActive="True" />
+
+                </Grid>
             </PivotItem>
 
             <!--Pivot item four-->
@@ -159,8 +171,12 @@ DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
                 DataContext="{Binding FourGroup}"
                 >
                 <!--Double line list no text wrapping-->
-                
-                <WebView Name="wvXiangjie" Loaded="FourPivot_Loaded"></WebView>
+                <Grid>
+                    <WebView Name="wvXiangjie" Loaded="FourPivot_Loaded"></WebView>
+                    
+                    <ProgressRing x:Name="prXiangjie" Visibility="Collapsed"  IsActive="True" />
+
+                </Grid>
             </PivotItem>
         </Pivot>
     </Grid>

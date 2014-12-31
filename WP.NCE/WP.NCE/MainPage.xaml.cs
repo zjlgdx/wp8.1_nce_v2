@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.Graphics.Display;
+using Windows.UI;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
@@ -17,6 +20,11 @@ namespace WP.NCE
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         //private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+
+        Color? originbackgroundColor;
+        Color? originforegroundColor;
+        double originopacity;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -28,6 +36,11 @@ namespace WP.NCE
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            StatusBar statusBar = StatusBar.GetForCurrentView();
+            originbackgroundColor = statusBar.BackgroundColor;
+            originforegroundColor = statusBar.ForegroundColor;
+            originopacity = statusBar.BackgroundOpacity;
         }
 
         /// <summary>
@@ -63,7 +76,7 @@ namespace WP.NCE
             bool failed = false;
             try
             {
-
+                await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading...");
             
             // TODO: Create an appropriate data model for your problem domain to replace the sample data
             var bookListDataSource = await GetBookListDataSource.GetBookListAsync();
@@ -89,6 +102,7 @@ namespace WP.NCE
                 failed = true;
                 
             }
+            await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
             if (failed)
             {
                 MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
@@ -152,5 +166,7 @@ namespace WP.NCE
                 throw new Exception("Navigation failed.");
             }
         }
+
+        
     }
 }

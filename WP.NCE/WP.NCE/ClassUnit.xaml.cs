@@ -12,6 +12,8 @@ using Windows.UI.Xaml.Navigation;
 using WP.NCE.Common;
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 using WP.NCE.DataModel;
+using Windows.UI.ViewManagement;
+using Windows.UI;
 
 namespace WP.NCE
 {
@@ -28,6 +30,9 @@ namespace WP.NCE
         private const string FourGroupName = "FourGroup";
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        Color? originbackgroundColor;
+        Color? originforegroundColor;
+        double originopacity;
 
         private string bookTextKey;
         private string bookTitle;
@@ -39,6 +44,11 @@ namespace WP.NCE
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            StatusBar statusBar = StatusBar.GetForCurrentView();
+            originbackgroundColor = statusBar.BackgroundColor;
+            originforegroundColor = statusBar.ForegroundColor;
+            originopacity = statusBar.BackgroundOpacity;
         }
 
         /// <summary>
@@ -74,6 +84,10 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                prYuanwen.IsActive = true;
+                prYuanwen.Visibility = Visibility.Visible;
+                lvYuanwen.Visibility = Visibility.Collapsed;
+
                 bookTextKey = (string)e.NavigationParameter;
 
                 var message = new ValueSet();
@@ -105,11 +119,19 @@ namespace WP.NCE
             {
                 failed = true;
             }
+            finally
+            {
+                prYuanwen.IsActive = false;
+                prYuanwen.Visibility = Visibility.Collapsed;
+                lvYuanwen.Visibility = Visibility.Visible;
+            }
             if (failed)
             {
                 MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
                 await md2.ShowAsync();
             }
+
+
         }
 
         /// <summary>
@@ -238,7 +260,9 @@ namespace WP.NCE
             bool failed = false;
             try
             {
-
+                prXiangjie.IsActive = true;
+                prXiangjie.Visibility = Visibility.Visible;
+                wvXiangjie.Visibility = Visibility.Collapsed;
 
                 var sampleDataGroup = await GetXiangJieListDataSource.GetXiangJieAsync(bookTextKey: bookTextKey);
                 //"<html><body><h2>This is an HTML fragment</h2></body></html>");
@@ -257,7 +281,12 @@ namespace WP.NCE
 
                 failed = true;
             }
-
+            finally
+            {
+                prXiangjie.IsActive = false;
+                prXiangjie.Visibility = Visibility.Collapsed;
+                wvXiangjie.Visibility = Visibility.Visible;
+            }
             if (failed)
             {
                 MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
@@ -345,6 +374,9 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                prCihui.IsActive = true;
+                prCihui.Visibility = Visibility.Visible;
+                lvCihui.Visibility = Visibility.Collapsed;
                 var sampleDataGroup = await GetCiHuiListDataSource.GetVocabularyAsync(bookTextKey: bookTextKey);
                 this.DefaultViewModel[ThreeGroupName] = sampleDataGroup;
 
@@ -352,6 +384,11 @@ namespace WP.NCE
             catch (Exception)
             {
                 failed = true;
+            }
+            finally {
+                prCihui.IsActive = false;
+                prCihui.Visibility = Visibility.Collapsed;
+                lvCihui.Visibility = Visibility.Visible;
             }
 
             if (failed)
@@ -366,6 +403,10 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                prShuangyu.IsActive = true;
+                prShuangyu.Visibility = Visibility.Visible;
+                lvShuangyu.Visibility = Visibility.Collapsed;
+
                 var sampleDataGroup = await GetShuangYuListDataSource.GetYuanWenAsync(bookTextKey: bookTextKey);
                 this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
 
@@ -374,6 +415,11 @@ namespace WP.NCE
             {
 
                 failed = true;
+            }
+            finally {
+                prShuangyu.IsActive = false;
+                prShuangyu.Visibility = Visibility.Collapsed;
+                lvShuangyu.Visibility = Visibility.Visible;
             }
 
             if (failed)
@@ -395,8 +441,11 @@ namespace WP.NCE
 
         private async void PlayAppBarButton_Click(object sender, RoutedEventArgs e)
         {
+            bool failed = false;
             try
             {
+                await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading audio...");
+
                 var file = await StorageDataHelper.GetAudioFileFromMusicLibraryAsync("WP.NCE", getAudioFileName);
 
                 if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
@@ -405,20 +454,18 @@ namespace WP.NCE
                     {
                         string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
                         var message = new ValueSet
-                    {
                         {
-                            "samePause-notPlay",
-                            fileInfo
-                        }
+                            {
+                                "samePause-notPlay",
+                                fileInfo
+                            }
 
-                    };
+                        };
                         BackgroundMediaPlayer.SendMessageToBackground(message);
+
+                        await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-                    else
-                    {
-                        MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                        await md2.ShowAsync();
-                    }
+                    
                 }
                 else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
                 {
@@ -426,20 +473,17 @@ namespace WP.NCE
                     {
                         string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
                         var message = new ValueSet
-                    {
                         {
-                            "samePlay-notPlay",
-                            fileInfo
-                        }
+                            {
+                                "samePlay-notPlay",
+                                fileInfo
+                            }
 
-                    };
+                        };
                         BackgroundMediaPlayer.SendMessageToBackground(message);
+                        await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-                    else
-                    {
-                        MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                        await md2.ShowAsync();
-                    }
+                    
                 }
                 else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
                 {
@@ -449,20 +493,18 @@ namespace WP.NCE
                     {
                         string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
                         var message = new ValueSet
-                    {
                         {
-                            "Play",
-                            fileInfo
-                        }
+                            {
+                                "Play",
+                                fileInfo
+                            }
 
-                    };
+                        };
                         BackgroundMediaPlayer.SendMessageToBackground(message);
+
+                        await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-                    else
-                    {
-                        MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                        await md2.ShowAsync();
-                    }
+                    
 
                 }
 
@@ -470,10 +512,13 @@ namespace WP.NCE
             catch (Exception)
             {
 
-
+                failed = true;
             }
 
-
+            if (failed)
+            {
+                await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
+            }
         }
 
         private async void American_OnClick(object sender, RoutedEventArgs e)
@@ -481,6 +526,8 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading audio...");
+
                 AudioType = Mp3Type.American;
                 var file = await DownloadAudioFile();
 
@@ -496,12 +543,10 @@ namespace WP.NCE
 
                     };
                     BackgroundMediaPlayer.SendMessageToBackground(message);
+
+                    await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                 }
-                else
-                {
-                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                    await md2.ShowAsync();
-                }
+               
             }
             catch (Exception)
             {
@@ -511,6 +556,8 @@ namespace WP.NCE
 
             if (failed)
             {
+                await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
+
                 MessageDialog md3 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
                 await md3.ShowAsync();
             }
@@ -521,6 +568,7 @@ namespace WP.NCE
             bool failed = false;
             try
             {
+                await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading audio...");
                 AudioType = Mp3Type.English;
                 var file = await DownloadAudioFile();
 
@@ -536,24 +584,29 @@ namespace WP.NCE
 
                     };
                     BackgroundMediaPlayer.SendMessageToBackground(message);
+
+                    await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                 }
-                else
-                {
-                    MessageDialog md2 = new MessageDialog("file is not ready!", "audio");
-                    await md2.ShowAsync();
-                }
+                
             }
             catch (Exception)
             {
 
                 failed = true;
             }
+            
+            
 
             if (failed)
             {
+
+                await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
+
                 MessageDialog md3 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
                 await md3.ShowAsync();
             }
         }
+
+        
     }
 }

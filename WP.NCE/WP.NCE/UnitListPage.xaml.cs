@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using WP.NCE.Common;
@@ -16,6 +19,10 @@ namespace WP.NCE
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        Color? originbackgroundColor;
+        Color? originforegroundColor;
+        double originopacity;
+
         public UnitListPage()
         {
             this.InitializeComponent();
@@ -23,6 +30,12 @@ namespace WP.NCE
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+
+            StatusBar statusBar = StatusBar.GetForCurrentView();
+            originbackgroundColor = statusBar.BackgroundColor;
+            originforegroundColor = statusBar.ForegroundColor;
+            originopacity = statusBar.BackgroundOpacity;
         }
 
         /// <summary>
@@ -58,7 +71,7 @@ namespace WP.NCE
             bool failed = false;
             try
             {
-
+                await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading...");
             
             // TODO: Create an appropriate data model for your problem domain to replace the sample data
             var bookUnitKey = (string)e.NavigationParameter;
@@ -74,7 +87,8 @@ namespace WP.NCE
             catch (Exception)
             {
                 failed = true;
-            } 
+            }
+            await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
             if (failed)
             {
                 MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
@@ -132,5 +146,7 @@ namespace WP.NCE
                 throw new Exception("Navigation failed.");
             }
         }
+
+        
     }
 }
