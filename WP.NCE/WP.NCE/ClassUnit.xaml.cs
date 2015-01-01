@@ -185,9 +185,9 @@ namespace WP.NCE
                         var _bookTextKey = e.Data[key].ToString();
                         Debug.WriteLine(bookTextKey);
 
-                        if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
+                        if (_bookTextKey == bookTextKey)
                         {
-                            if (_bookTextKey == bookTextKey)
+                            if (MediaPlayerState.Playing == BackgroundMediaPlayer.Current.CurrentState)
                             {
                                 await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                                         {
@@ -195,9 +195,15 @@ namespace WP.NCE
                                             PlayAppBarButton.Icon = new SymbolIcon(Symbol.Pause);
                                         });
                             }
-
+                            else
+                            {
+                                await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                                {
+                                    PlayAppBarButton.Label = "play";
+                                    PlayAppBarButton.Icon = new SymbolIcon(Symbol.Play);
+                                });
+                            }
                         }
-
 
                         break;
                 }
@@ -385,7 +391,8 @@ namespace WP.NCE
             {
                 failed = true;
             }
-            finally {
+            finally
+            {
                 prCihui.IsActive = false;
                 prCihui.Visibility = Visibility.Collapsed;
                 lvCihui.Visibility = Visibility.Visible;
@@ -416,7 +423,8 @@ namespace WP.NCE
 
                 failed = true;
             }
-            finally {
+            finally
+            {
                 prShuangyu.IsActive = false;
                 prShuangyu.Visibility = Visibility.Collapsed;
                 lvShuangyu.Visibility = Visibility.Visible;
@@ -465,7 +473,7 @@ namespace WP.NCE
 
                         await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-                    
+
                 }
                 else if (MediaPlayerState.Paused == BackgroundMediaPlayer.Current.CurrentState)
                 {
@@ -483,7 +491,7 @@ namespace WP.NCE
                         BackgroundMediaPlayer.SendMessageToBackground(message);
                         await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-                    
+
                 }
                 else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
                 {
@@ -504,7 +512,7 @@ namespace WP.NCE
 
                         await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-                    
+
 
                 }
 
@@ -546,7 +554,7 @@ namespace WP.NCE
 
                     await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                 }
-               
+
             }
             catch (Exception)
             {
@@ -587,15 +595,15 @@ namespace WP.NCE
 
                     await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                 }
-                
+
             }
             catch (Exception)
             {
 
                 failed = true;
             }
-            
-            
+
+
 
             if (failed)
             {
@@ -607,6 +615,6 @@ namespace WP.NCE
             }
         }
 
-        
+
     }
 }
