@@ -90,7 +90,7 @@ namespace WP.NCE
             await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
             if (failed)
             {
-                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md2 = new MessageDialog(Constants.WININET_E_NAME_NOT_RESOLVED, Constants.NETWORK_CONNECTION);
                 await md2.ShowAsync();
             }
 

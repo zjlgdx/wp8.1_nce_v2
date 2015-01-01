@@ -4,16 +4,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation.Collections;
 using Windows.Media.Playback;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using WP.NCE.Common;
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 using WP.NCE.DataModel;
-using Windows.UI.ViewManagement;
-using Windows.UI;
 
 namespace WP.NCE
 {
@@ -82,6 +82,8 @@ namespace WP.NCE
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             bool failed = false;
+            var errorMessage = string.Empty;
+
             try
             {
                 prYuanwen.IsActive = true;
@@ -115,8 +117,9 @@ namespace WP.NCE
                 BackgroundMediaPlayer.SendMessageToBackground(message);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                errorMessage = Helper.HandlerExceptionMessage(ex);
                 failed = true;
             }
             finally
@@ -127,10 +130,9 @@ namespace WP.NCE
             }
             if (failed)
             {
-                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md2 = new MessageDialog(errorMessage, Constants.NETWORK_CONNECTION);
                 await md2.ShowAsync();
             }
-
 
         }
 
@@ -264,6 +266,7 @@ namespace WP.NCE
         private async void FourPivot_Loaded(object sender, RoutedEventArgs e)
         {
             bool failed = false;
+            var errorMessage = string.Empty;
             try
             {
                 prXiangjie.IsActive = true;
@@ -282,9 +285,9 @@ namespace WP.NCE
                 wvXiangjie.NavigateToString(sbHtml.ToString());
                 this.DefaultViewModel[FourGroupName] = sampleDataGroup;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                errorMessage = Helper.HandlerExceptionMessage(ex);
                 failed = true;
             }
             finally
@@ -295,7 +298,7 @@ namespace WP.NCE
             }
             if (failed)
             {
-                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md2 = new MessageDialog(errorMessage, Constants.NETWORK_CONNECTION);
                 await md2.ShowAsync();
             }
         }
@@ -378,6 +381,7 @@ namespace WP.NCE
         private async void ThreePivot_Loaded(object sender, RoutedEventArgs e)
         {
             bool failed = false;
+            var errorMessage = string.Empty;
             try
             {
                 prCihui.IsActive = true;
@@ -387,8 +391,9 @@ namespace WP.NCE
                 this.DefaultViewModel[ThreeGroupName] = sampleDataGroup;
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                errorMessage = Helper.HandlerExceptionMessage(ex);
                 failed = true;
             }
             finally
@@ -400,7 +405,7 @@ namespace WP.NCE
 
             if (failed)
             {
-                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md2 = new MessageDialog(errorMessage, Constants.NETWORK_CONNECTION);
                 await md2.ShowAsync();
             }
         }
@@ -408,6 +413,7 @@ namespace WP.NCE
         private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
         {
             bool failed = false;
+            var errorMessage = string.Empty;
             try
             {
                 prShuangyu.IsActive = true;
@@ -418,9 +424,9 @@ namespace WP.NCE
                 this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                errorMessage = Helper.HandlerExceptionMessage(ex);
                 failed = true;
             }
             finally
@@ -432,7 +438,7 @@ namespace WP.NCE
 
             if (failed)
             {
-                MessageDialog md2 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md2 = new MessageDialog(errorMessage, Constants.NETWORK_CONNECTION);
                 await md2.ShowAsync();
             }
         }
@@ -495,8 +501,6 @@ namespace WP.NCE
                 }
                 else if (MediaPlayerState.Closed == BackgroundMediaPlayer.Current.CurrentState)
                 {
-
-
                     if (!string.IsNullOrEmpty(file))
                     {
                         string[] fileInfo = new[] { bookTitle, file, bookTextKey, "autoplay" };
@@ -512,14 +516,11 @@ namespace WP.NCE
 
                         await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
                     }
-
-
                 }
 
             }
-            catch (Exception)
+            catch 
             {
-
                 failed = true;
             }
 
@@ -532,6 +533,7 @@ namespace WP.NCE
         private async void American_OnClick(object sender, RoutedEventArgs e)
         {
             bool failed = false;
+            var errorMessage = string.Empty;
             try
             {
                 await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading audio...");
@@ -556,9 +558,9 @@ namespace WP.NCE
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                errorMessage = Helper.HandlerExceptionMessage(ex);
                 failed = true;
             }
 
@@ -566,7 +568,7 @@ namespace WP.NCE
             {
                 await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
 
-                MessageDialog md3 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md3 = new MessageDialog(errorMessage, Constants.NETWORK_CONNECTION);
                 await md3.ShowAsync();
             }
         }
@@ -574,6 +576,7 @@ namespace WP.NCE
         private async void English_OnClick(object sender, RoutedEventArgs e)
         {
             bool failed = false;
+            var errorMessage = string.Empty;
             try
             {
                 await Helper.ShowSystemTrayAsync(Colors.CornflowerBlue, Colors.White, text: "loading audio...");
@@ -597,20 +600,17 @@ namespace WP.NCE
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                errorMessage = Helper.HandlerExceptionMessage(ex);
                 failed = true;
             }
 
-
-
             if (failed)
             {
-
                 await Helper.HideSystemTrayAsync(originbackgroundColor, originforegroundColor, originopacity);
 
-                MessageDialog md3 = new MessageDialog("网络异常，请检查网络设置!", "网络链接");
+                MessageDialog md3 = new MessageDialog(errorMessage, Constants.NETWORK_CONNECTION);
                 await md3.ShowAsync();
             }
         }

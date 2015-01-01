@@ -103,6 +103,7 @@
     <Compile Include="ClassUnit.xaml.cs">
       <DependentUpon>ClassUnit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Helper.cs" />
     <Compile Include="Common\StorageDataHelper.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
