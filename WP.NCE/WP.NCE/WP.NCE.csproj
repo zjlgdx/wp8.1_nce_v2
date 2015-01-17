@@ -110,6 +110,7 @@
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="DataModel\AppSettingsViewModel.cs" />
     <Compile Include="DataModel\BaseDataSource.cs" />
     <Compile Include="DataModel\Book.cs" />
     <Compile Include="DataModel\BookText.cs" />
@@ -127,6 +128,9 @@
     <Compile Include="DataModel\LineContent.cs" />
     <Compile Include="DataModel\Paragraph.cs" />
     <Compile Include="DataModel\Vocabulary.cs" />
+    <Compile Include="LocalSetting.xaml.cs">
+      <DependentUpon>LocalSetting.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -167,6 +171,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ClassUnit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LocalSetting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

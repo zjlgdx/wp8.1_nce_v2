@@ -615,6 +615,14 @@ namespace WP.NCE
             }
         }
 
+        private void AudioSetting_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Frame.Navigate(typeof(LocalSetting)))
+            {
+                throw new Exception("Navigation failed.");
+            }
+        }
+
 
     }
 }

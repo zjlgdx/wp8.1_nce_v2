@@ -187,6 +187,7 @@ DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Uid="SecondaryButton1" x:Name="American" Label="美音" Click="American_OnClick" />
                 <AppBarButton x:Uid="SecondaryButton2" x:Name="English" Label="英音" Click="English_OnClick" />
+                <AppBarButton x:Uid="SecondaryButton3" x:Name="AudioSetting" Label="默认语音设置" Click="AudioSetting_Click" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
