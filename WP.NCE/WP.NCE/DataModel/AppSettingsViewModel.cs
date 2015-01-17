@@ -12,14 +12,14 @@ namespace WP.NCE.DataModel
 {
     public class AppSettingsViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<AudioSetting> _audios;
-        public ObservableCollection<AudioSetting> Audios
+        private ObservableCollection<string> _audios;
+        public ObservableCollection<string> Audios
         {
             get
             {
                 if (_audios == null)
                 {
-                    _audios = new ObservableCollection<AudioSetting>() { new AudioSetting { AudioName = "美音" }, new AudioSetting { AudioName = "英音" } };
+                    _audios = new ObservableCollection<string>() { "美音", "英音" };
                 }
                 return _audios;
             }
@@ -30,7 +30,7 @@ namespace WP.NCE.DataModel
 
 
         // The default value of our settings
-        const string DefaultLearningTypeSettingValue = "英音";
+        const string DefaultLearningTypeSettingValue = "美音";
 
         /// <summary>
         /// Constructor that gets the application settings.
@@ -38,15 +38,7 @@ namespace WP.NCE.DataModel
         public AppSettingsViewModel()
         {
             var defaultAudio = GetValueOrDefault<string>(DefaultAudioSettingKeyName, DefaultLearningTypeSettingValue);
-            if (AudioSetting != null)
-            {
-                AudioSetting.AudioName = defaultAudio;
-            }
-            else
-            {
-                AudioSetting = new DataModel.AudioSetting() { AudioName = defaultAudio };
-            }
-            
+            AudioSetting = defaultAudio;
         }
 
         /// <summary>
@@ -81,6 +73,10 @@ namespace WP.NCE.DataModel
             return valueChanged;
         }
 
+        public void Save(string value)
+        {
+            AddOrUpdateValue(DefaultAudioSettingKeyName, value);
+        }
 
         /// <summary>
         /// Get the current value of the setting, or if it is not found, set the 
@@ -109,14 +105,13 @@ namespace WP.NCE.DataModel
         }
 
 
-        private AudioSetting _audioSetting;
-        public AudioSetting AudioSetting
+        private string _audioSetting;
+        public string AudioSetting
         {
             get { return _audioSetting; }
             set
             {
                 this.SetProperty(ref this._audioSetting, value);
-                AddOrUpdateValue(DefaultAudioSettingKeyName, value.AudioName);
             }
         }
 
@@ -143,54 +138,5 @@ namespace WP.NCE.DataModel
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
-
-    public class AudioSetting : INotifyPropertyChanged
-    {
-        private string audioName;
-        public string AudioName { get { return audioName; } set { this.SetProperty(ref this.audioName, value); } }
-
-        public override string ToString()
-        {
-            return AudioName;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj != null)
-            {
-                if (this.AudioName == obj.ToString())
-                {
-                    return true;
-                }
-            }
-            return base.Equals(obj);
-        }
-        public override int GetHashCode()
-        {
-            return AudioName.GetHashCode();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] String propertyName = null)
-        {
-            if (object.Equals(storage, value))
-            {
-                return false;
-            }
-
-            storage = value;
-            this.OnPropertyChanged(propertyName);
-            return true;
-        }
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
+    
 }

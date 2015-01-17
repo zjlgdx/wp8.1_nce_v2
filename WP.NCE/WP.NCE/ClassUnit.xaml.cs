@@ -86,9 +86,28 @@ namespace WP.NCE
 
             try
             {
+
                 prYuanwen.IsActive = true;
                 prYuanwen.Visibility = Visibility.Visible;
                 lvYuanwen.Visibility = Visibility.Collapsed;
+
+                var setting = new AppSettingsViewModel();
+                if (setting != null)
+                {
+                    switch (setting.AudioSetting)
+                    {
+                        case "美音":
+                            AudioType = Mp3Type.American;
+                            break;
+                        case "英音":
+                            AudioType = Mp3Type.English;
+                            break;
+                        default:
+                            AudioType = Mp3Type.American;
+                            break;
+                    }
+                    
+                }
 
                 bookTextKey = (string)e.NavigationParameter;
 

@@ -85,7 +85,8 @@ namespace WP.NCE
         {
             var setting = new AppSettingsViewModel();
 
-            setting.AudioSetting = this.DefaultViewModel["DefaultAudio"] as AudioSetting;
+            var settingAudio = this.DefaultViewModel["DefaultAudio"] as string;
+            setting.Save(settingAudio);
             
         }
 
